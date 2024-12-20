@@ -13,7 +13,7 @@ function App() {
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then((response) => response.json())
       .then((data) => {
-        // Limit to the first 10 for display
+        // Limit to first 10 for neat display
         setPosts(data.slice(0, 10));
       })
       .catch((error) => console.error('Error fetching posts:', error));
@@ -51,10 +51,26 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        // Update the local state with the updated post returned from the server
+        // Update the local state with the updated post
         setPosts(posts.map((post) => (post.id === data.id ? data : post)));
       })
       .catch((error) => console.error('Error updating post:', error));
+  };
+
+  const handleDelete = (postId) => {
+    // Send DELETE request to delete the existing post
+    fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`, {
+      method: 'DELETE'
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Remove the post from local state
+          setPosts(posts.filter((post) => post.id !== postId));
+        } else {
+          console.error('Error deleting post:', response.statusText);
+        }
+      })
+      .catch((error) => console.error('Error deleting post:', error));
   };
 
   const handleEdit = (post) => {
@@ -74,7 +90,7 @@ function App() {
         editingPost={editingPost}
         onClose={handleFormClose}
       />
-      <PostList posts={posts} onEdit={handleEdit} />
+      <PostList posts={posts} onEdit={handleEdit} onDelete={handleDelete} />
     </div>
   );
 }
