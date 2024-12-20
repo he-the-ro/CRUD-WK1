@@ -20,13 +20,26 @@ function App() {
   }, []);
 
   const handleCreate = (newPost) => {
-    // Simulate an ID by one more than the current max ID
-    const maxId = posts.reduce((max, post) => (post.id > max ? post.id : max), 0);
-    const createdPost = { ...newPost, id: maxId + 1 };
-    setPosts([...posts, createdPost]);
+    // Send POST request to JSONPlaceholder to create a new post
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: newPost.title,
+        body: newPost.body,
+        userId: 1, // Arbitrary userId for demonstration
+      }),
+    })
+      .then((response) => response.json())
+      .then((createdPost) => {
+        // Append the created post to the local state
+        setPosts([...posts, createdPost]);
+      })
+      .catch((error) => console.error('Error creating post:', error));
   };
 
   const handleUpdate = (updatedPost) => {
+    // This is still local simulation since JSONPlaceholder doesn't update server posts
     setPosts(posts.map((post) => (post.id === updatedPost.id ? updatedPost : post)));
   };
 
@@ -53,3 +66,4 @@ function App() {
 }
 
 export default App;
+
