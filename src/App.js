@@ -13,34 +13,48 @@ function App() {
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then((response) => response.json())
       .then((data) => {
-        // Limit to first 10 for neat display
+        // Limit to the first 10 for display
         setPosts(data.slice(0, 10));
       })
       .catch((error) => console.error('Error fetching posts:', error));
   }, []);
 
   const handleCreate = (newPost) => {
-    // Send POST request to JSONPlaceholder to create a new post
+    // Send POST request to create a new post
     fetch('https://jsonplaceholder.typicode.com/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: newPost.title,
         body: newPost.body,
-        userId: 1, // Arbitrary userId for demonstration
+        userId: 1
       }),
     })
       .then((response) => response.json())
       .then((createdPost) => {
-        // Append the created post to the local state
         setPosts([...posts, createdPost]);
       })
       .catch((error) => console.error('Error creating post:', error));
   };
 
   const handleUpdate = (updatedPost) => {
-    // This is still local simulation since JSONPlaceholder doesn't update server posts
-    setPosts(posts.map((post) => (post.id === updatedPost.id ? updatedPost : post)));
+    // Send PUT request to update the existing post
+    fetch(`https://jsonplaceholder.typicode.com/posts/${updatedPost.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: updatedPost.id,
+        title: updatedPost.title,
+        body: updatedPost.body,
+        userId: 1
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Update the local state with the updated post returned from the server
+        setPosts(posts.map((post) => (post.id === data.id ? data : post)));
+      })
+      .catch((error) => console.error('Error updating post:', error));
   };
 
   const handleEdit = (post) => {
@@ -66,4 +80,5 @@ function App() {
 }
 
 export default App;
+
 
